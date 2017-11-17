@@ -1,74 +1,74 @@
 import axios, { AxiosRequestConfig, AxiosPromise, AxiosInstance } from 'axios';
-import API_BASE from "./config";
 
-interface Validator
+export interface Validator
 {
-    isValid(object): Boolean;
+    isValid(object: any): boolean;
 }
 
-interface Validatable
+export interface Validatable
 {
-    isValid()
-    getValidator(): Validator;
+    isValid(): boolean
+    getValidator(): Validator|null;
 }
 
-class User implements Validatable{
-    _id: String;
-    email: String;
-    password: String;
-    key: String;
-    role: String;
+export class User implements Validatable{
+    _id: string;
+    email: string;
+    password: string;
+    key: string;
+    role: string;
     application : Application;
-    isValid() : Boolean { return false; }
-    getValidator() : Validator { return null; }
+    isValid() { return false; }
+    getValidator() { return null; }
 }
  
-class Application
+export class Application
 {
-    name: String;           // full name
-    school: String;         // name of school
-    phone: String;          // phone number
-    shirt: String;          // t-shirt size
-    demographic: Boolean;   // allowed to use demographic info?
-    first: Boolean;         // is this your first hackathon?
-    dietary: String[];        // food restrictions seperated by |
-    year: String;           // the year in school
-    age: String;            // person's age
-    gender: String;         // gender
-    major: String;          // degree
-    conduct: Boolean;       // agree to MLH code of conduct?
-    travel: Boolean;        // need travel reimbursement?
-    waiver: Boolean;        // agreed to waiver?
-    resume: String;         // the filename of their resume
-    link: String;           // a github/linkedin link
-    extra: String;
+    name: string;           // full name
+    school: string;         // name of school
+    phone: string;          // phone number
+    shirt: string;          // t-shirt size
+    demographic: boolean;   // allowed to use demographic info?
+    first: boolean;         // is this your first hackathon?
+    dietary: string[];        // food restrictions seperated by |
+    year: string;           // the year in school
+    age: string;            // person's age
+    gender: string;         // gender
+    major: string;          // degree
+    conduct: boolean;       // agree to MLH code of conduct?
+    travel: boolean;        // need travel reimbursement?
+    waiver: boolean;        // agreed to waiver?
+    resume: string;         // the filename of their resume
+    link: string;           // a github/linkedin link
+    extra: string;
 }
 
-class ApiWrapper
+export class ApiWrapper
 {
-    _axios: AxiosInstance;           // AXIOS implementation
-    currentUser : User;             // Null if not logged in.
-    requestReplayer: Function[];
+    private _axios: AxiosInstance;           // AXIOS implementation
+    private _apiBase: string;
+    private _clientId: string;
+    currentUser : User|null = null;             // Null if not logged in.
+    requestReplayer: ()=>any[];
     
-    constructor()
+    constructor(apiBase: string, clientId: string, _axios = axios.create())
     {
-        this._axios = axios.create();
+        this._apiBase = apiBase;
+        this._clientId = clientId;
+        this._axios = _axios;
     }
     
-    Login(username: String, password: String)
+    login(username: string, password: string)
     {
-        return this._axios.get(API_BASE + '/token', { 
+        return this._axios.get(this._apiBase + '/token', { 
             data: {
-                client : "id",
-                email: "",
-                password: ""
+                client : this._clientId,
+                email: username,
+                password: password
             }
         })
-        .then(response => {
+        .then((response: any) => {
             this.currentUser = response.data;
-        })
-        .catch(error => {
-            throw error;
         })
     }
 }
