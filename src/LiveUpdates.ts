@@ -2,7 +2,7 @@ import * as io from "socket.io-client"
 import { API_BASE } from "./config/config"
 import { log } from "./util/log"
 
-export interface ISubscriber<T> {
+interface ISubscriber<T> {
     onCreate(msg: T) : void;
     onUpdate(msg: T) : void;
     onDelete(msg: T) : void;
@@ -46,16 +46,13 @@ export class LiveUpdates
         this.eventListeners = [];
     }
 
+    //#region Event Subscriptions
     public SubscribeToMessages(subscriber: IMessageSubscriber) {
         this.messageListeners.push(subscriber);
     }
 
     public UnSubMessages(subscriber: IMessageSubscriber) : boolean {
-        let pos = this.messageListeners.indexOf(subscriber);
-        if (pos !== -1) {
-            this.messageListeners.splice(pos, 1)
-            return true;
-        } else return false;
+        return this.UnSub(this.messageListeners, subscriber);
     }
 
     public SubscribeToEvents(subscriber: IEventSubscriber) {
@@ -63,12 +60,17 @@ export class LiveUpdates
     }
 
     public UnSubEvents(subscriber: IEventSubscriber) : boolean {
-        let pos = this.eventListeners.indexOf(subscriber);
+        return this.UnSub(this.eventListeners, subscriber);
+    }
+
+    public UnSub<T>(list: ISubscriber<T>[], sub: ISubscriber<T>) : boolean {
+        let pos = list.indexOf(sub);
         if (pos !== -1) {
-            this.eventListeners.splice(pos, 1)
+            list.splice(pos, 1)
             return true;
         } else return false;
     }
+    //#endregion Event Subscriptions
 
     /*
      * Since this is use in a callback,
@@ -85,7 +87,7 @@ export class LiveUpdates
         let events: SocketIOClient.Socket = io.connect(API_BASE + '/events');
         events.on('create', inst.eventCreate);
         events.on('update', inst.eventUpdate);
-        events.on('delete', inst.eventDelete);
+        events.on('delete', inst.eventDelete);        
     }
 
     /*
