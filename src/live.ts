@@ -1,5 +1,6 @@
 import * as io from "socket.io-client"
 import { API_BASE } from "./config/config"
+import { log } from "./util/log"
 
 export interface ISubscriber<T> {
     onCreate(msg: T) : void;
@@ -94,7 +95,7 @@ export class LiveUpdates
     //#region Message event handlers.
     private msgCreate(data: Message) : void {
         let inst = LiveUpdates._instance;
-        console.log('Create Message' + data)
+        log.debug(['Create Message', data])
         for (let i = 0; i < inst.messageListeners.length; i++)
         {
             inst.messageListeners[i].onCreate(data);
@@ -103,7 +104,7 @@ export class LiveUpdates
 
     private msgUpdate(data: Message) : void {
         let inst = LiveUpdates._instance;
-        console.log('Update Message:' + data);
+        log.debug(['Update Message:' , data]);
         for (let i = 0; i < inst.messageListeners.length; i++)
         {
             inst.messageListeners[i].onUpdate(data);
@@ -112,7 +113,7 @@ export class LiveUpdates
 
     private msgDelete(data: Message) : void {
         let inst = LiveUpdates._instance;
-        console.log('Delete Message:' + data);
+        log.debug(['Delete Message:' , data]);
         for (let i = 0; i < inst.messageListeners.length; i++)
         {
             inst.messageListeners[i].onDelete(data);
@@ -127,7 +128,7 @@ export class LiveUpdates
     //#region /event event handlers
     private eventCreate(data: Event) : void {
         let inst = LiveUpdates._instance;
-        console.log('Create Event:' + data);
+        log.debug(['Create Event:' , data]);
         for (let i = 0; i < inst.eventListeners.length; i++)
         {
             inst.eventListeners[i].onCreate(data);
@@ -136,7 +137,7 @@ export class LiveUpdates
 
     private eventUpdate(data: Event) : void {
         let inst = LiveUpdates._instance;
-        console.log('Update Message:' + data);
+        log.debug(['Update Message:' , data]);
         for (let i = 0; i < inst.eventListeners.length; i++)
         {
             inst.eventListeners[i].onUpdate(data);
@@ -145,7 +146,7 @@ export class LiveUpdates
 
     private eventDelete(data: Event) : void {
         let inst = LiveUpdates._instance;
-        console.log('Delete Event:' + data);
+        log.debug(['Delete Event:' , data]);
         for (let i = 0; i < inst.eventListeners.length; i++)
         {
             inst.eventListeners[i].onDelete(data);
