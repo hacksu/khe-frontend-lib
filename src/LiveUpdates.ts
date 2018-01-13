@@ -9,12 +9,12 @@ export interface ISubscriber<T> {
 }
 
 export interface IMessageSubscriber extends ISubscriber<Message> { }
-class Message {
+export class Message {
     public text: string;
 }
 
 export interface IEventSubscriber extends ISubscriber<Event> { }
-class Event {
+export class Event {
     public title: String;
     public description: String;
     public start: Date;
@@ -27,7 +27,7 @@ class Event {
 export class LiveUpdates 
 {
     //#region Singleton Members
-    private static _instance: LiveUpdates;
+    protected static _instance: LiveUpdates;
     static GetInstance() : LiveUpdates {
         if (LiveUpdates._instance === undefined)
         {
@@ -41,7 +41,7 @@ export class LiveUpdates
     private messageListeners : IMessageSubscriber[];
     private eventListeners : IEventSubscriber[];
 
-    private constructor() {
+    protected constructor() {
         this.messageListeners = [];
         this.eventListeners = [];
     }
@@ -93,7 +93,7 @@ export class LiveUpdates
      * do not use 'this' as it will be undefined.
     */
     //#region Message event handlers.
-    private msgCreate(data: Message) : void {
+    protected msgCreate(data: Message) : void {
         let inst = LiveUpdates._instance;
         log.debug(['Create Message', data])
         for (let i = 0; i < inst.messageListeners.length; i++)
@@ -102,7 +102,7 @@ export class LiveUpdates
         }
     }
 
-    private msgUpdate(data: Message) : void {
+    protected msgUpdate(data: Message) : void {
         let inst = LiveUpdates._instance;
         log.debug(['Update Message:' , data]);
         for (let i = 0; i < inst.messageListeners.length; i++)
@@ -111,7 +111,7 @@ export class LiveUpdates
         }
     }
 
-    private msgDelete(data: Message) : void {
+    protected msgDelete(data: Message) : void {
         let inst = LiveUpdates._instance;
         log.debug(['Delete Message:' , data]);
         for (let i = 0; i < inst.messageListeners.length; i++)
@@ -126,7 +126,7 @@ export class LiveUpdates
      * do not use 'this' as it will be undefined.
     */
     //#region /event event handlers
-    private eventCreate(data: Event) : void {
+    protected eventCreate(data: Event) : void {
         let inst = LiveUpdates._instance;
         log.debug(['Create Event:' , data]);
         for (let i = 0; i < inst.eventListeners.length; i++)
@@ -135,7 +135,7 @@ export class LiveUpdates
         }
     }
 
-    private eventUpdate(data: Event) : void {
+    protected eventUpdate(data: Event) : void {
         let inst = LiveUpdates._instance;
         log.debug(['Update Message:' , data]);
         for (let i = 0; i < inst.eventListeners.length; i++)
@@ -144,7 +144,7 @@ export class LiveUpdates
         }
     }
 
-    private eventDelete(data: Event) : void {
+    protected eventDelete(data: Event) : void {
         let inst = LiveUpdates._instance;
         log.debug(['Delete Event:' , data]);
         for (let i = 0; i < inst.eventListeners.length; i++)
