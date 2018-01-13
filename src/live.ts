@@ -31,12 +31,7 @@ export class LiveUpdates
         if (LiveUpdates._instance === undefined)
         {
             LiveUpdates._instance = new LiveUpdates();
-            if (!("Notification" in window))
-            {
-                console.error("Live notifications not supported.");
-            } else {
-                Notification.requestPermission(LiveUpdates._instance.initConnections)
-            }
+            LiveUpdates._instance.initConnections();
         }
         return LiveUpdates._instance;
     }
@@ -78,12 +73,7 @@ export class LiveUpdates
      * Since this is use in a callback,
      * do not use 'this' as it will be undefined.
     */
-    private initConnections(permission: string) {
-        if (permission !== "granted")
-        {
-           return;
-        }
-
+    private initConnections() {
         let inst = LiveUpdates._instance;
 
         let messages: SocketIOClient.Socket = io.connect(API_BASE + '/messages');
@@ -95,10 +85,6 @@ export class LiveUpdates
         events.on('create', inst.eventCreate);
         events.on('update', inst.eventUpdate);
         events.on('delete', inst.eventDelete);
-
-        new Notification("KHE Update", {
-            body: "Socket set up"
-        });
     }
 
     /*
@@ -108,9 +94,7 @@ export class LiveUpdates
     //#region Message event handlers.
     private msgCreate(data: Message) : void {
         let inst = LiveUpdates._instance;
-        new Notification("KHE Update", {
-            body: data.text
-        });
+        console.log('Create Message' + data)
         for (let i = 0; i < inst.messageListeners.length; i++)
         {
             inst.messageListeners[i].onCreate(data);
