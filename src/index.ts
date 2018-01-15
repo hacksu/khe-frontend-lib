@@ -3,6 +3,8 @@ import { User } from './User'
 import { IValidatable } from './index'
 import { AuthHelper } from './util/AuthenticationHelper'
 import { log } from './util/log'
+import { SponsorLoader } from './Sponsor';
+import { API_BASE, CLIENT_ID } from './config/config';
 
 export interface IValidatable
 {
@@ -14,21 +16,25 @@ export class ApiWrapper
     private static readonly localStorageKey: string = 'user';
 
     private _axios: AxiosInstance;           // AXIOS implementation
-    private _apiBase: string;
-    private _clientId: string;
     currentUser : User;
     requestReplayer: ()=>any[];
+
+    public readonly sponsorSource: SponsorLoader;
     
-    constructor(apiBase: string, clientId: string, axiosInst = axios.create({ baseURL: apiBase }))
+    constructor(axiosInst: AxiosInstance = axios.create({ baseURL: API_BASE }))
     {
-        this._apiBase = apiBase;
-        this._clientId = clientId;
         this._axios = axiosInst;
         
         let user: User|null = this.getLocalUser();
         if (user) {
             this.currentUser = user;
         }
+
+        this.sponsorSource = new SponsorLoader(this._axios);
+    }
+ 
+    getServerConnection(): AxiosInstance {
+        return this._axios;
     }
 
     getLocalUser(): User|null {
@@ -51,8 +57,8 @@ export class ApiWrapper
     {
         var self = this;
         var _email = email;
-        return this._axios.post(this._apiBase + '/users/token', {
-                client : this._clientId,
+        return this._axios.post('/users/token', {
+                client : CLIENT_ID,
                 email: email,
                 password: password 
         })
