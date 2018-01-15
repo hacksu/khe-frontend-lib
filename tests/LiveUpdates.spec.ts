@@ -1,7 +1,12 @@
-import { LiveUpdates, Message, Event, IMessageSubscriber, IEventSubscriber } from '../src/LiveUpdates'
+import { LiveUpdates, Message, Event, IMessageSubscriber, IEventSubscriber, ISubscriber } from '../src/LiveUpdates'
 import { expect } from 'chai'
 import 'mocha'
 
+/**
+ * @description Provide access to private members
+ * for testing. Allows destruction of singleton
+ * and access to mock socketio events.
+ */
 class UtilLiveUpdates extends LiveUpdates {
     public constructor() {
         super();
@@ -11,24 +16,19 @@ class UtilLiveUpdates extends LiveUpdates {
         LiveUpdates._instance = new LiveUpdates();
     }
 
-    public createMsg(msg: Message) {
-        super.msgCreate(msg);
-    }
-    public updateMsg(msg: Message) {
-        super.msgUpdate(msg);
-    }
-    public deleteMsg(msg: Message) {
-        super.msgDelete(msg);
+    public SockCbGenerator<T>(debugMessage: string,
+        list: ISubscriber<T>[],
+        callback: Function
+        ) : Function {
+        return super.SockCbGenerator('UtilLiveUpdates - '+debugMessage, list, callback);
     }
 
-    public createEvent(evt: Event) {
-        super.eventCreate(evt);
+    public GetMessageListeners(): IMessageSubscriber[] {
+        return super.GetMessageListeners();
     }
-    public updateEvent(evt: Event) : void {
-        super.eventUpdate(evt);
-    }
-    public deleteEvent(evt: Event) : void {
-        super.eventDelete(evt);
+
+    public GetEventListeners(): IEventSubscriber[] {
+        return super.GetEventListeners();
     }
 } 
 
@@ -40,122 +40,10 @@ describe('GetInstance()', () => {
     });
 });
 
-describe('SubMessages(), UnSubMessages(), msg[cr|up|del]()', () => {
-    // Using 'var' because I want this to exist in tests.
-    var updater: LiveUpdates;
-
-    var GetMessageListener = (): IMessageSubscriber => {
-        return {
-            onCreate: () => {},
-            onUpdate: () => {},
-            onDelete: () => {}
-        };
-    }
-
-    beforeEach(() => {
-        // Tear down the instance of the singleton.
-        UtilLiveUpdates.TearDownInstance();
-        updater = LiveUpdates.GetInstance();
-    });
-    
-    it('should add and remove listeners', () => {
-        const msgListener = GetMessageListener();
-        updater.SubscribeToMessages(msgListener);
-
-        expect(updater.UnSubMessages(msgListener)).is.true;
-    });
-
-    it('should not remove listeners that dont exist', () => {
-        const msgListener = GetMessageListener();
-
-        expect(updater.UnSubMessages(msgListener)).is.false;
-    });
-
-    it('should pass a create message to all listeners', () => {
-        var testString = 'testing message';
-        var expectCbHits = 2;
-
-        const expectCb = (msg: Message) => { 
-            expectCbHits--;
-            expect(msg.text).equals(testString, 'message err'); 
-        };
-        
-        const passedMsg = new Message();
-        passedMsg.text = testString;
-
-        const listener1 = GetMessageListener();
-        const listener2 = GetMessageListener();
-
-        listener1.onCreate = expectCb;
-        listener2.onCreate = expectCb;
-
-        updater.SubscribeToMessages(listener1);
-        updater.SubscribeToMessages(listener2);
-
-        const utilUpdates = new UtilLiveUpdates();
-        utilUpdates.createMsg(passedMsg);
-
-
-        expect(expectCbHits).to.equal(0);
-    });
-
-    it('should pass a update message to all listeners', () => {
-        var testString = 'testing message';
-        var expectCbHits = 2;
-
-        const expectCb = (msg: Message) => { 
-            expectCbHits--;
-            expect(msg.text).equals(testString, 'message err'); 
-        };
-        
-        const passedMsg = new Message();
-        passedMsg.text = testString;
-
-        const listener1 = GetMessageListener();
-        const listener2 = GetMessageListener();
-
-        listener1.onUpdate = expectCb;
-        listener2.onUpdate = expectCb;
-
-        updater.SubscribeToMessages(listener1);
-        updater.SubscribeToMessages(listener2);
-
-        const utilUpdates = new UtilLiveUpdates();
-        utilUpdates.updateMsg(passedMsg);
-
-
-        expect(expectCbHits).to.equal(0);
-    });
-
-    it('should pass a delet message to all listeners', () => {
-        var testString = 'testing message';
-        var expectCbHits = 2;
-
-        const expectCb = (msg: Message) => { 
-            expectCbHits--;
-            expect(msg.text).equals(testString, 'message err'); 
-        };
-        
-        const passedMsg = new Message();
-        passedMsg.text = testString;
-
-        const listener1 = GetMessageListener();
-        const listener2 = GetMessageListener();
-
-        listener1.onDelete = expectCb;
-        listener2.onDelete = expectCb;
-
-        updater.SubscribeToMessages(listener1);
-        updater.SubscribeToMessages(listener2);
-
-        const utilUpdates = new UtilLiveUpdates();
-        utilUpdates.deleteMsg(passedMsg);
-
-
-        expect(expectCbHits).to.equal(0);
-    });
-});
-
+/**
+ * Because events and messages use the same logic,
+ * we only need to test one of the two.
+ */
 describe('SubEvents(), UnSubEvents(), event[cr|up|del]()', () => {
     // Using 'var' because I want this to exist in tests.
     var updater: LiveUpdates;
@@ -168,10 +56,43 @@ describe('SubEvents(), UnSubEvents(), event[cr|up|del]()', () => {
         };
     }
 
+    var testString = 'testing message';
+    var GetExampleEvent = () => {
+        const passedEvent = new Event();
+        passedEvent.title = testString;
+        return passedEvent;
+    }
+
+    var expectCbHits: number;
+    var expectCb = (msg: Event) => { 
+        expectCbHits--;
+        expect(msg.title).equals(testString, 'message err'); 
+    };
+
+    var testGenerator = (eventName: string, 
+                            callback: Function,
+                            passedEvent: Event,
+                            listener1: IEventSubscriber,
+                            listener2: IEventSubscriber
+                        ) => {
+        updater.SubscribeToEvents(listener1);
+        updater.SubscribeToEvents(listener2);
+
+        const utilUpdates = new UtilLiveUpdates();
+        utilUpdates.SockCbGenerator(
+            eventName,
+            utilUpdates.GetEventListeners(),
+            callback
+        )(passedEvent);
+
+        expect(expectCbHits).to.equal(0);
+    };
+
     beforeEach(() => {
         // Tear down the instance of the singleton.
         UtilLiveUpdates.TearDownInstance();
         updater = LiveUpdates.GetInstance();
+        expectCbHits = 2;
     });
     
     it('should add and remove listeners', () => {
@@ -188,86 +109,47 @@ describe('SubEvents(), UnSubEvents(), event[cr|up|del]()', () => {
     });
 
     it('should pass a create event to all listeners', () => {
-        var testString = 'testing message';
-        var expectCbHits = 2;
-
-        const expectCb = (msg: Event) => { 
-            expectCbHits--;
-            expect(msg.title).equals(testString, 'message err'); 
-        };
-        
-        const passedMsg = new Event();
-        passedMsg.title = testString;
-
         const listener1 = GetEventListener();
         const listener2 = GetEventListener();
 
         listener1.onCreate = expectCb;
         listener2.onCreate = expectCb;
-
-        updater.SubscribeToEvents(listener1);
-        updater.SubscribeToEvents(listener2);
-
-        const utilUpdates = new UtilLiveUpdates();
-        utilUpdates.createEvent(passedMsg);
-
-
-        expect(expectCbHits).to.equal(0);
+        
+        testGenerator('Create Event Test', 
+                        (sub: IEventSubscriber) => sub.onCreate,
+                        GetExampleEvent(),
+                        listener1,
+                        listener2
+                    );
     });
 
     it('should pass a update event to all listeners', () => {
-        var testString = 'testing message';
-        var expectCbHits = 2;
-
-        const expectCb = (msg: Event) => { 
-            expectCbHits--;
-            expect(msg.title).equals(testString, 'message err'); 
-        };
-        
-        const passedMsg = new Event();
-        passedMsg.title = testString;
-
         const listener1 = GetEventListener();
         const listener2 = GetEventListener();
 
         listener1.onUpdate = expectCb;
         listener2.onUpdate = expectCb;
 
-        updater.SubscribeToEvents(listener1);
-        updater.SubscribeToEvents(listener2);
-
-        const utilUpdates = new UtilLiveUpdates();
-        utilUpdates.updateEvent(passedMsg);
-
-
-        expect(expectCbHits).to.equal(0);
+        testGenerator('Update Event Test',
+                        (sub: IEventSubscriber) => sub.onUpdate,
+                        GetExampleEvent(),
+                        listener1,
+                        listener2
+                    );
     });
 
-    it('should pass a delet event to all listeners', () => {
-        var testString = 'testing message';
-        var expectCbHits = 2;
-
-        const expectCb = (msg: Event) => { 
-            expectCbHits--;
-            expect(msg.title).equals(testString, 'message err'); 
-        };
-        
-        const passedMsg = new Event();
-        passedMsg.title = testString;
-
+    it('should pass a delete event to all listeners', () => {
         const listener1 = GetEventListener();
         const listener2 = GetEventListener();
-
+    
         listener1.onDelete = expectCb;
         listener2.onDelete = expectCb;
 
-        updater.SubscribeToEvents(listener1);
-        updater.SubscribeToEvents(listener2);
-
-        const utilUpdates = new UtilLiveUpdates();
-        utilUpdates.deleteEvent(passedMsg);
-
-
-        expect(expectCbHits).to.equal(0);
+        testGenerator('Delete Event Test',
+                        (sub: IEventSubscriber) => sub.onDelete,
+                        GetExampleEvent(),
+                        listener1,
+                        listener2
+                    );
     });
 });

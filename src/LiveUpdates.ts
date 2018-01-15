@@ -2,7 +2,7 @@ import * as io from "socket.io-client"
 import { API_BASE } from "./config/config"
 import { log } from "./util/log"
 
-interface ISubscriber<T> {
+export interface ISubscriber<T> {
     onCreate(msg: T) : void;
     onUpdate(msg: T) : void;
     onDelete(msg: T) : void;
@@ -38,8 +38,8 @@ export class LiveUpdates
     }
     //#endregion Singleton Members    
 
-    private messageListeners : IMessageSubscriber[];
-    private eventListeners : IEventSubscriber[];
+    protected messageListeners : IMessageSubscriber[];
+    protected eventListeners : IEventSubscriber[];
 
     protected constructor() {
         this.messageListeners = [];
@@ -80,80 +80,59 @@ export class LiveUpdates
         let inst = LiveUpdates._instance;
 
         let messages: SocketIOClient.Socket = io.connect(API_BASE + '/messages');
-        messages.on('create', inst.msgCreate);
-        messages.on('update', inst.msgUpdate);
-        messages.on('delete', inst.msgDelete);
+        messages.on('create', inst.SockCbGenerator(
+            "Create Message",
+            inst.messageListeners,
+            (sub: IMessageSubscriber) => sub.onCreate
+        ));
+        messages.on('update', inst.SockCbGenerator(
+            "Update Message",
+            inst.messageListeners,
+            (sub: IMessageSubscriber) => sub.onUpdate
+        ));
+        messages.on('delete', inst.SockCbGenerator(
+            "Delete Message",
+            inst.messageListeners,
+            (sub: IMessageSubscriber) => sub.onDelete
+        ));
 
         let events: SocketIOClient.Socket = io.connect(API_BASE + '/events');
-        events.on('create', inst.eventCreate);
-        events.on('update', inst.eventUpdate);
-        events.on('delete', inst.eventDelete);        
+        events.on('create', inst.SockCbGenerator(
+            'Delete Event:',
+            inst.eventListeners,
+            (sub: IEventSubscriber) => sub.onCreate
+            ));
+        events.on('update', inst.SockCbGenerator(
+            'Update Event:',
+            inst.eventListeners,
+            (sub: IEventSubscriber) => sub.onUpdate
+            ));
+        events.on('delete', inst.SockCbGenerator(
+            'Delete Event:',
+            inst.eventListeners,
+            (sub: IEventSubscriber) => sub.onDelete
+            ));        
     }
 
-    /*
-     * Since these are use in callbacks,
-     * do not use 'this' as it will be undefined.
-    */
-    //#region Message event handlers.
-    protected msgCreate(data: Message) : void {
-        let inst = LiveUpdates._instance;
-        log.debug(['Create Message', data])
-        for (let i = 0; i < inst.messageListeners.length; i++)
-        {
-            inst.messageListeners[i].onCreate(data);
+    protected SockCbGenerator<T>(debugMessage: string,
+                                    list: ISubscriber<T>[],
+                                    callback: Function
+                                    ) : Function {
+        var savedList = list;
+        return (data: T) => {
+            log.debug([debugMessage, data]);
+            for (let i = 0; i < savedList.length; i++)
+            {
+                callback(savedList[i])(data);
+            }
         }
     }
 
-    protected msgUpdate(data: Message) : void {
-        let inst = LiveUpdates._instance;
-        log.debug(['Update Message:' , data]);
-        for (let i = 0; i < inst.messageListeners.length; i++)
-        {
-            inst.messageListeners[i].onUpdate(data);
-        }
+    protected GetMessageListeners(): IMessageSubscriber[] {
+        return LiveUpdates._instance.messageListeners;
     }
 
-    protected msgDelete(data: Message) : void {
-        let inst = LiveUpdates._instance;
-        log.debug(['Delete Message:' , data]);
-        for (let i = 0; i < inst.messageListeners.length; i++)
-        {
-            inst.messageListeners[i].onDelete(data);
-        }
+    protected GetEventListeners(): IEventSubscriber[] {
+        return LiveUpdates._instance.eventListeners;
     }
-    //#endregion Message event handlers
-
-    /*
-     * Since these are use in callbacks,
-     * do not use 'this' as it will be undefined.
-    */
-    //#region /event event handlers
-    protected eventCreate(data: Event) : void {
-        let inst = LiveUpdates._instance;
-        log.debug(['Create Event:' , data]);
-        for (let i = 0; i < inst.eventListeners.length; i++)
-        {
-            inst.eventListeners[i].onCreate(data);
-        }
-    }
-
-    protected eventUpdate(data: Event) : void {
-        let inst = LiveUpdates._instance;
-        log.debug(['Update Message:' , data]);
-        for (let i = 0; i < inst.eventListeners.length; i++)
-        {
-            inst.eventListeners[i].onUpdate(data);
-        }
-    }
-
-    protected eventDelete(data: Event) : void {
-        let inst = LiveUpdates._instance;
-        log.debug(['Delete Event:' , data]);
-        for (let i = 0; i < inst.eventListeners.length; i++)
-        {
-            inst.eventListeners[i].onDelete(data);
-        }
-    }
-    //#endregion /event event handlers
-
 }
