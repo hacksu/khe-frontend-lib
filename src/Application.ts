@@ -1,4 +1,6 @@
-export class Application
+import { IValidatable } from './index';
+
+export class Application implements IValidatable
 {
     name: string;           // full name
     school: string;         // name of school
@@ -17,4 +19,5 @@ export class Application
     resume: string;         // the filename of their resume
     link: string;           // a github/linkedin link
     extra: string;
+    isValid() { return false; }
 }

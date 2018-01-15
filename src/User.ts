@@ -11,5 +11,4 @@ export class User implements IValidatable{
     tokenExpiration: number;
     refresh: string;
     isValid() { return false; }
-    getValidator() { return null; }
 }
