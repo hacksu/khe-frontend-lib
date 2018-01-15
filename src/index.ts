@@ -11,6 +11,8 @@ export interface IValidatable
 
 export class ApiWrapper
 {
+    private static readonly localStorageKey: string = 'user';
+
     private _axios: AxiosInstance;           // AXIOS implementation
     private _apiBase: string;
     private _clientId: string;
@@ -22,9 +24,30 @@ export class ApiWrapper
         this._apiBase = apiBase;
         this._clientId = clientId;
         this._axios = axiosInst;
+        
+        let user: User|null = this.getLocalUser();
+        if (user) {
+            this.currentUser = user;
+        }
+    }
+
+    getLocalUser(): User|null {
+        let userString = localStorage.getItem(ApiWrapper.localStorageKey);
+        if (userString) {
+            let user: User = JSON.parse(userString);
+            log.debug([ApiWrapper, 'Parsed User from localStorage', user]);
+            return user;
+        } else {
+            return null;
+        }
+    }
+
+    saveLocalUser(user: User): void {
+        localStorage.setItem(ApiWrapper.localStorageKey, JSON.stringify(this.currentUser));
+        log.debug(['Saved User Locally', user])
     }
     
-    login(email: string, password: string)
+    login(email: string, password: string): Promise<any>
     {
         var self = this;
         var _email = email;
@@ -39,6 +62,7 @@ export class ApiWrapper
             self.currentUser.email = _email;
             log.debug([ApiWrapper, 'Login Success', self.currentUser]);
             self.loadUserApplication(self.currentUser);
+            self.saveLocalUser(self.currentUser);
         })
         .catch((err: any) => {
             throw err;
