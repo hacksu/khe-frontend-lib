@@ -10,7 +10,7 @@ describe('ApiWrapper', () => {
     it('should login', () => {
         const mock = new AxiosInstanceMock();
         mock.setResponse({data: {}})
-        const apiWrapper = new ApiWrapper('/var/www', 'test', mock);
+        const apiWrapper = new ApiWrapper(mock);
         apiWrapper.login('hi', 'test');
         const request = mock.getLastRequest();
         expect(request).to.haveOwnProperty('config');
