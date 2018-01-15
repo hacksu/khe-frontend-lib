@@ -12,27 +12,32 @@ export class ApiWrapper
     private _axios: AxiosInstance;           // AXIOS implementation
     private _apiBase: string;
     private _clientId: string;
-    currentUser : User|null = null;             // Null if not logged in.
+    currentUser : User;
     requestReplayer: ()=>any[];
     
-    constructor(apiBase: string, clientId: string, _axios = axios.create())
+    constructor(apiBase: string, clientId: string, axiosInst = axios.create({ baseURL: apiBase }))
     {
         this._apiBase = apiBase;
         this._clientId = clientId;
-        this._axios = _axios;
+        this._axios = axiosInst;
     }
     
-    login(username: string, password: string)
+    login(email: string, password: string)
     {
-        return this._axios.get(this._apiBase + '/token', { 
-            data: {
+        var self = this;
+        var _email = email;
+        return this._axios.post(this._apiBase + '/users/token', {
                 client : this._clientId,
-                email: username,
-                password: password
-            }
+                email: email,
+                password: password 
         })
         .then((response: any) => {
-            this.currentUser = response.data;
+            self.currentUser = response.data;
+            self.currentUser.tokenExpiration = Date.parse(response.data.expires);
+            self.currentUser.email = _email;
         })
+        .catch((err: any) => {
+            throw err;
+        });
     }
 }
