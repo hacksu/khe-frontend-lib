@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosAdapter } from 'axios';
 import { log } from './util/log'
-import { API_BASE } from './config/config';
+import { Config } from './util/config';
+import { ServiceClass } from './ServiceClass';
 
 export class Sponsor {
     _id: string;
@@ -10,19 +11,17 @@ export class Sponsor {
     imgUrl: string;
 }
 
-export class SponsorLoader {
+export class SponsorLoader extends ServiceClass {
 
-    private _axios: AxiosInstance;
-
-    constructor(axiosInst: AxiosInstance) {
-        this._axios = axiosInst;
+    constructor(_service: ServiceClass) {
+        super(_service);
     }
 
     public getSponsors(): Promise<any> {
-        return this._axios.get('/sponsors')
+        return super.axios.get('/sponsors')
         .then((res) => {
             res.data.forEach((element: Sponsor): Sponsor => {
-                element.imgUrl = API_BASE + '/sponsors/' + element._id + '/logo';
+                element.imgUrl = super.config.api_base + '/sponsors/' + element._id + '/logo';
                 return element;
             })
             log.debug([SponsorLoader, 'Got Sponsors', res.data]);

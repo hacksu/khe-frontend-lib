@@ -1,12 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const log_1 = require("./util/log");
-const config_1 = require("./config/config");
 const ServiceClass_1 = require("./ServiceClass");
 const AuthenticationHelper_1 = require("./util/AuthenticationHelper");
 class UserManager extends ServiceClass_1.ServiceClass {
-    constructor(axios) {
-        super(axios);
+    constructor(_service) {
+        super(_service);
         let user = this.getLocalUser();
         if (user) {
             this.currentUser = user;
@@ -32,8 +31,8 @@ class UserManager extends ServiceClass_1.ServiceClass {
     login(email, password) {
         var self = this;
         var _email = email;
-        return this._axios.post('/users/token', {
-            client: config_1.CLIENT_ID,
+        return this.axios.post('/users/token', {
+            client: super.config.client_id,
             email: email,
             password: password
         })
@@ -51,7 +50,7 @@ class UserManager extends ServiceClass_1.ServiceClass {
     }
     loadUserApplication(user) {
         var _user = user;
-        this._axios.request(AuthenticationHelper_1.AuthHelper.authenticate(user, {
+        this.axios.request(AuthenticationHelper_1.AuthHelper.authenticate(user, {
             url: '/users/me/application'
         })).then((res) => {
             _user.application = res.data.application;
@@ -62,13 +61,13 @@ class UserManager extends ServiceClass_1.ServiceClass {
     }
     createUser(email, password) {
         var _email = email;
-        return this._axios.request({
+        return this.axios.request({
             method: 'post',
             url: '/users',
             data: {
                 email: email,
                 password: password,
-                client: config_1.CLIENT_ID
+                client: super.config.client_id
             }
         }).then((res) => {
             log_1.log.debug([UserManager, 'Created User', res.data]);

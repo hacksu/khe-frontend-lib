@@ -1,33 +1,27 @@
 import axios, { AxiosRequestConfig, AxiosPromise, AxiosInstance, AxiosAdapter, AxiosBasicCredentials } from 'axios';
 import { User } from './User'
-import { IValidatable } from './index'
 import { log } from './util/log'
-import { SponsorLoader } from './Sponsor';
-import { API_BASE } from './config/config';
+import { Config } from './util/config';
+import { ExplicitServiceClass, ServiceClass } from './ServiceClass';
+
 import { UserManager } from './UserManager'
+import { SponsorLoader } from './Sponsor';
 
 export interface IValidatable
 {
     isValid(): boolean
 }
 
-export class ApiWrapper
+export class ApiWrapper extends ExplicitServiceClass
 {
-    private _axios: AxiosInstance;           // AXIOS implementation
-    requestReplayer: ()=>any[];
-
-    public readonly sponsorSource: SponsorLoader;
-    public readonly userManager: UserManager;
+    readonly sponsorSource: SponsorLoader;
+    readonly userManager: UserManager;
     
-    constructor(axiosInst: AxiosInstance = axios.create({ baseURL: API_BASE }))
+    constructor(config: Config, axiosInst: AxiosInstance = axios.create({ baseURL: config.api_base }))
     {
-        this._axios = axiosInst;
+        super(axiosInst, config);
 
-        this.userManager = new UserManager(this._axios);
-        this.sponsorSource = new SponsorLoader(this._axios);
-    }
- 
-    getServerConnection(): AxiosInstance {
-        return this._axios;
+        this.userManager = new UserManager(this);
+        this.sponsorSource = new SponsorLoader(this);
     }
 }

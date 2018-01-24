@@ -1,4 +1,4 @@
-import { DEBUG } from "../config/config";
+const DEBUG = true;
 
 export class log {
     static debug(obj: any) : void {

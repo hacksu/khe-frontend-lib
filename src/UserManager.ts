@@ -1,6 +1,5 @@
 import { User } from './User'
 import { log } from './util/log'
-import { CLIENT_ID } from './config/config';
 import { ServiceClass } from './ServiceClass';
 import { AxiosInstance } from 'axios';
 import { AuthHelper } from './util/AuthenticationHelper'
@@ -11,8 +10,8 @@ export class UserManager extends ServiceClass {
 
     currentUser : User;
 
-    constructor(axios: AxiosInstance)  {
-        super(axios);
+    constructor(_service: ServiceClass)  {
+        super(_service);
 
         let user: User|null = this.getLocalUser();
         if (user) {
@@ -44,8 +43,8 @@ export class UserManager extends ServiceClass {
     {
         var self = this;
         var _email = email;
-        return this._axios.post('/users/token', {
-                client : CLIENT_ID,
+        return this.axios.post('/users/token', {
+                client : super.config.client_id,
                 email: email,
                 password: password 
         })
@@ -64,7 +63,7 @@ export class UserManager extends ServiceClass {
 
     loadUserApplication(user: User) {
         var _user = user;
-        this._axios.request(AuthHelper.authenticate(user, {
+        this.axios.request(AuthHelper.authenticate(user, {
             url: '/users/me/application'
         })).then((res) => {
             _user.application = res.data.application;
@@ -76,13 +75,13 @@ export class UserManager extends ServiceClass {
 
     createUser(email: string, password:string): Promise<any> {
         var _email = email;
-        return this._axios.request({
+        return this.axios.request({
             method: 'post',
             url: '/users',
             data: {
                 email: email,
                 password: password,
-                client: CLIENT_ID
+                client: super.config.client_id
             }
         }).then((res: any) => {
             log.debug([UserManager, 'Created User', res.data]);

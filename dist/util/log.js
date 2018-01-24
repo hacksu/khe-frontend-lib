@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = require("../config/config");
+const DEBUG = true;
 class log {
     static debug(obj) {
-        if (config_1.DEBUG) {
+        if (DEBUG) {
             console.log(obj);
         }
     }

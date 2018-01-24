@@ -1,6 +1,6 @@
 import * as io from "socket.io-client"
-import { API_BASE } from "./config/config"
 import { log } from "./util/log"
+import { ServiceClass } from "./ServiceClass";
 
 export interface ISubscriber<T> {
     onCreate(msg: T) : void;
@@ -24,26 +24,16 @@ export class Event {
     public location: String;
 }
 
-export class LiveUpdates 
+export class LiveUpdates extends ServiceClass
 {
-    //#region Singleton Members
-    protected static _instance: LiveUpdates;
-    static GetInstance() : LiveUpdates {
-        if (LiveUpdates._instance === undefined)
-        {
-            LiveUpdates._instance = new LiveUpdates();
-            LiveUpdates._instance.initConnections();
-        }
-        return LiveUpdates._instance;
-    }
-    //#endregion Singleton Members    
-
     protected messageListeners : IMessageSubscriber[];
     protected eventListeners : IEventSubscriber[];
 
-    protected constructor() {
+    protected constructor(_service: ServiceClass) {
+        super(_service);
         this.messageListeners = [];
         this.eventListeners = [];
+        this.initConnections();
     }
 
     //#region Event Subscriptions
@@ -77,39 +67,37 @@ export class LiveUpdates
      * do not use 'this' as it will be undefined.
     */
     private initConnections() {
-        let inst = LiveUpdates._instance;
-
-        let messages: SocketIOClient.Socket = io.connect(API_BASE + '/messages');
-        messages.on('create', inst.SockCbGenerator(
+        let messages: SocketIOClient.Socket = io.connect(super.config.api_base + '/messages');
+        messages.on('create', this.SockCbGenerator(
             "Create Message",
-            inst.messageListeners,
+            this.messageListeners,
             (sub: IMessageSubscriber) => sub.onCreate
         ));
-        messages.on('update', inst.SockCbGenerator(
+        messages.on('update', this.SockCbGenerator(
             "Update Message",
-            inst.messageListeners,
+            this.messageListeners,
             (sub: IMessageSubscriber) => sub.onUpdate
         ));
-        messages.on('delete', inst.SockCbGenerator(
+        messages.on('delete', this.SockCbGenerator(
             "Delete Message",
-            inst.messageListeners,
+            this.messageListeners,
             (sub: IMessageSubscriber) => sub.onDelete
         ));
 
-        let events: SocketIOClient.Socket = io.connect(API_BASE + '/events');
-        events.on('create', inst.SockCbGenerator(
+        let events: SocketIOClient.Socket = io.connect(super.config.api_base + '/events');
+        events.on('create', this.SockCbGenerator(
             'Delete Event:',
-            inst.eventListeners,
+            this.eventListeners,
             (sub: IEventSubscriber) => sub.onCreate
             ));
-        events.on('update', inst.SockCbGenerator(
+        events.on('update', this.SockCbGenerator(
             'Update Event:',
-            inst.eventListeners,
+            this.eventListeners,
             (sub: IEventSubscriber) => sub.onUpdate
             ));
-        events.on('delete', inst.SockCbGenerator(
+        events.on('delete', this.SockCbGenerator(
             'Delete Event:',
-            inst.eventListeners,
+            this.eventListeners,
             (sub: IEventSubscriber) => sub.onDelete
             ));        
     }
@@ -129,10 +117,10 @@ export class LiveUpdates
     }
 
     protected GetMessageListeners(): IMessageSubscriber[] {
-        return LiveUpdates._instance.messageListeners;
+        return this.messageListeners;
     }
 
     protected GetEventListeners(): IEventSubscriber[] {
-        return LiveUpdates._instance.eventListeners;
+        return this.eventListeners;
     }
 }
