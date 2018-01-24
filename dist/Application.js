@@ -1,6 +1,9 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-class Application {
-    isValid() { return false; }
-}
+exports.__esModule = true;
+var Application = /** @class */ (function () {
+    function Application() {
+    }
+    Application.prototype.isValid = function () { return false; };
+    return Application;
+}());
 exports.Application = Application;

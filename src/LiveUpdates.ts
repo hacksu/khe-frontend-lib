@@ -67,7 +67,7 @@ export class LiveUpdates extends ServiceClass
      * do not use 'this' as it will be undefined.
     */
     private initConnections() {
-        let messages: SocketIOClient.Socket = io.connect(super.config.api_base + '/messages');
+        let messages: SocketIOClient.Socket = io.connect(super.config().api_base + '/messages');
         messages.on('create', this.SockCbGenerator(
             "Create Message",
             this.messageListeners,
@@ -84,7 +84,7 @@ export class LiveUpdates extends ServiceClass
             (sub: IMessageSubscriber) => sub.onDelete
         ));
 
-        let events: SocketIOClient.Socket = io.connect(super.config.api_base + '/events');
+        let events: SocketIOClient.Socket = io.connect(super.config().api_base + '/events');
         events.on('create', this.SockCbGenerator(
             'Delete Event:',
             this.eventListeners,

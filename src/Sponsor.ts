@@ -18,10 +18,10 @@ export class SponsorLoader extends ServiceClass {
     }
 
     public getSponsors(): Promise<any> {
-        return super.axios.get('/sponsors')
+        return super.axios().get('/sponsors')
         .then((res) => {
             res.data.forEach((element: Sponsor): Sponsor => {
-                element.imgUrl = super.config.api_base + '/sponsors/' + element._id + '/logo';
+                element.imgUrl = super.config().api_base + '/sponsors/' + element._id + '/logo';
                 return element;
             })
             log.debug([SponsorLoader, 'Got Sponsors', res.data]);

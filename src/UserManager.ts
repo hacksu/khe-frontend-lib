@@ -43,8 +43,8 @@ export class UserManager extends ServiceClass {
     {
         var self = this;
         var _email = email;
-        return this.axios.post('/users/token', {
-                client : super.config.client_id,
+        return this.axios().post('/users/token', {
+                client : super.config().client_id,
                 email: email,
                 password: password 
         })
@@ -63,7 +63,7 @@ export class UserManager extends ServiceClass {
 
     loadUserApplication(user: User) {
         var _user = user;
-        this.axios.request(AuthHelper.authenticate(user, {
+        this.axios().request(AuthHelper.authenticate(user, {
             url: '/users/me/application'
         })).then((res) => {
             _user.application = res.data.application;
@@ -75,13 +75,13 @@ export class UserManager extends ServiceClass {
 
     createUser(email: string, password:string): Promise<any> {
         var _email = email;
-        return this.axios.request({
+        return this.axios().request({
             method: 'post',
             url: '/users',
             data: {
                 email: email,
                 password: password,
-                client: super.config.client_id
+                client: super.config().client_id
             }
         }).then((res: any) => {
             log.debug([UserManager, 'Created User', res.data]);

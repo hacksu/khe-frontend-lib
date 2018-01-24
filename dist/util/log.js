@@ -1,11 +1,14 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const DEBUG = true;
-class log {
-    static debug(obj) {
+exports.__esModule = true;
+var DEBUG = true;
+var log = /** @class */ (function () {
+    function log() {
+    }
+    log.debug = function (obj) {
         if (DEBUG) {
             console.log(obj);
         }
-    }
-}
+    };
+    return log;
+}());
 exports.log = log;

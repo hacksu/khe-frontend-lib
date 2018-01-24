@@ -1,82 +1,94 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const log_1 = require("./util/log");
-const ServiceClass_1 = require("./ServiceClass");
-const AuthenticationHelper_1 = require("./util/AuthenticationHelper");
-class UserManager extends ServiceClass_1.ServiceClass {
-    constructor(_service) {
-        super(_service);
-        let user = this.getLocalUser();
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var log_1 = require("./util/log");
+var ServiceClass_1 = require("./ServiceClass");
+var AuthenticationHelper_1 = require("./util/AuthenticationHelper");
+var UserManager = /** @class */ (function (_super) {
+    __extends(UserManager, _super);
+    function UserManager(_service) {
+        var _this = _super.call(this, _service) || this;
+        var user = _this.getLocalUser();
         if (user) {
-            this.currentUser = user;
+            _this.currentUser = user;
         }
+        return _this;
     }
-    getLocalUser() {
-        let userString = localStorage.getItem(UserManager.localStorageKey);
+    UserManager.prototype.getLocalUser = function () {
+        var userString = localStorage.getItem(UserManager.localStorageKey);
         if (userString) {
-            let user = JSON.parse(userString);
+            var user = JSON.parse(userString);
             log_1.log.debug([UserManager, 'Parsed User from localStorage', user]);
             return user;
         }
         else {
             return null;
         }
-    }
-    saveLocalUser(user) {
+    };
+    UserManager.prototype.saveLocalUser = function (user) {
         localStorage.setItem(UserManager.localStorageKey, JSON.stringify(this.currentUser));
         log_1.log.debug(['Saved User Locally', user]);
-    }
-    setCurrentUser(user) {
-    }
-    login(email, password) {
+    };
+    UserManager.prototype.setCurrentUser = function (user) {
+    };
+    UserManager.prototype.login = function (email, password) {
         var self = this;
         var _email = email;
-        return this.axios.post('/users/token', {
-            client: super.config.client_id,
+        return this.axios().post('/users/token', {
+            client: _super.prototype.config.call(this).client_id,
             email: email,
             password: password
         })
-            .then((response) => {
+            .then(function (response) {
             self.currentUser = response.data;
             self.currentUser.tokenExpiration = Date.parse(response.data.expires);
             self.currentUser.email = _email;
             log_1.log.debug([UserManager, 'Login Success', self.currentUser]);
             self.loadUserApplication(self.currentUser);
             self.saveLocalUser(self.currentUser);
-        })
-            .catch((err) => {
+        })["catch"](function (err) {
             throw err;
         });
-    }
-    loadUserApplication(user) {
+    };
+    UserManager.prototype.loadUserApplication = function (user) {
         var _user = user;
-        this.axios.request(AuthenticationHelper_1.AuthHelper.authenticate(user, {
+        this.axios().request(AuthenticationHelper_1.AuthHelper.authenticate(user, {
             url: '/users/me/application'
-        })).then((res) => {
+        })).then(function (res) {
             _user.application = res.data.application;
             log_1.log.debug([UserManager, 'Loaded User Application', _user.application]);
-        }).catch((err) => {
+        })["catch"](function (err) {
             throw err;
         });
-    }
-    createUser(email, password) {
+    };
+    UserManager.prototype.createUser = function (email, password) {
         var _email = email;
-        return this.axios.request({
+        return this.axios().request({
             method: 'post',
             url: '/users',
             data: {
                 email: email,
                 password: password,
-                client: super.config.client_id
+                client: _super.prototype.config.call(this).client_id
             }
-        }).then((res) => {
+        }).then(function (res) {
             log_1.log.debug([UserManager, 'Created User', res.data]);
             res.data.email = _email;
             //setCurrentUser(res.data);
-        }).catch((err) => {
+        })["catch"](function (err) {
             throw err;
         });
-    }
-}
-UserManager.localStorageKey = 'user';
+    };
+    UserManager.localStorageKey = 'user';
+    return UserManager;
+}(ServiceClass_1.ServiceClass));
 exports.UserManager = UserManager;
