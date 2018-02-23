@@ -6,6 +6,7 @@ import { ExplicitServiceClass, ServiceClass } from './ServiceClass';
 
 import { UserManager } from './UserManager'
 import { SponsorLoader } from './Sponsor';
+import { TicketManager } from './TicketManager';
 
 export interface IValidatable
 {
@@ -16,6 +17,7 @@ export class ApiWrapper extends ExplicitServiceClass
 {
     readonly sponsorSource: SponsorLoader;
     readonly userManager: UserManager;
+    readonly ticketManager: TicketManager;
     
     constructor(config: Config, axiosInst: AxiosInstance = axios.create({ baseURL: config.api_base }))
     {
@@ -23,5 +25,6 @@ export class ApiWrapper extends ExplicitServiceClass
 
         this.userManager = new UserManager(this);
         this.sponsorSource = new SponsorLoader(this);
+        this.ticketManager = new TicketManager(this);
     }
 }

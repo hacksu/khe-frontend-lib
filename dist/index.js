@@ -14,6 +14,7 @@ var axios_1 = require("axios");
 var ServiceClass_1 = require("./ServiceClass");
 var UserManager_1 = require("./UserManager");
 var Sponsor_1 = require("./Sponsor");
+var TicketManager_1 = require("./TicketManager");
 var ApiWrapper = /** @class */ (function (_super) {
     __extends(ApiWrapper, _super);
     function ApiWrapper(config, axiosInst) {
@@ -21,6 +22,7 @@ var ApiWrapper = /** @class */ (function (_super) {
         var _this = _super.call(this, axiosInst, config) || this;
         _this.userManager = new UserManager_1.UserManager(_this);
         _this.sponsorSource = new Sponsor_1.SponsorLoader(_this);
+        _this.ticketManager = new TicketManager_1.TicketManager(_this);
         return _this;
     }
     return ApiWrapper;
