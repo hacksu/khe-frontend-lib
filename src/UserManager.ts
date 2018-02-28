@@ -61,6 +61,21 @@ export class UserManager extends ServiceClass {
         });
     }
 
+    logout() {
+        this.axios().request(
+            AuthHelper.authenticate(this.currentUser, {
+                url:'/users/token',
+                method: 'delete'
+            })
+        ).then(res => {
+            log.debug([UserManager, 'Logout successful.']);
+            this.currentUser = new User();
+            this.saveLocalUser(this.currentUser);
+        }).catch(err => {
+            throw err;
+        })
+    }
+
     loadUserApplication(user: User) {
         var _user = user;
         this.axios().request(AuthHelper.authenticate(user, {

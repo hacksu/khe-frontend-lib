@@ -10,6 +10,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
+var User_1 = require("./User");
 var log_1 = require("./util/log");
 var ServiceClass_1 = require("./ServiceClass");
 var AuthenticationHelper_1 = require("./util/AuthenticationHelper");
@@ -55,6 +56,19 @@ var UserManager = /** @class */ (function (_super) {
             log_1.log.debug([UserManager, 'Login Success', self.currentUser]);
             self.loadUserApplication(self.currentUser);
             self.saveLocalUser(self.currentUser);
+        })["catch"](function (err) {
+            throw err;
+        });
+    };
+    UserManager.prototype.logout = function () {
+        var _this = this;
+        this.axios().request(AuthenticationHelper_1.AuthHelper.authenticate(this.currentUser, {
+            url: '/users/token',
+            method: 'delete'
+        })).then(function (res) {
+            log_1.log.debug([UserManager, 'Logout successful.']);
+            _this.currentUser = new User_1.User();
+            _this.saveLocalUser(_this.currentUser);
         })["catch"](function (err) {
             throw err;
         });
