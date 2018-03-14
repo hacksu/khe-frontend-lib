@@ -4,6 +4,14 @@ import { ServiceClass } from './ServiceClass';
 import { AxiosInstance } from 'axios';
 import { AuthHelper } from './util/AuthenticationHelper'
 
+declare function require(name: any): any;
+
+// Node specific storage
+if (typeof localStorage === "undefined" || localStorage === null) {
+    var LocalStorage = require('node-localstorage').LocalStorage;
+    var localStorage = new LocalStorage('/tmp/test');
+}
+
 export class UserManager extends ServiceClass {
 
     private static readonly localStorageKey: string = 'user';
@@ -30,16 +38,13 @@ export class UserManager extends ServiceClass {
         }
     }
 
-    saveLocalUser(user: User): void {
+    saveLocalUser(user: User) {
+        this.currentUser = user;
         localStorage.setItem(UserManager.localStorageKey, JSON.stringify(this.currentUser));
         log.debug(['Saved User Locally', user])
     }
-
-    private setCurrentUser(user: User) {
-        
-    }
     
-    login(email: string, password: string): Promise<any>
+    login(email: string, password: string): Promise<User>
     {
         var self = this;
         var _email = email;
@@ -48,32 +53,25 @@ export class UserManager extends ServiceClass {
                 email: email,
                 password: password 
         })
-        .then((response: any) => {
-            self.currentUser = response.data;
-            self.currentUser.tokenExpiration = Date.parse(response.data.expires);
-            self.currentUser.email = _email;
-            log.debug([UserManager, 'Login Success', self.currentUser]);
-            self.loadUserApplication(self.currentUser);
-            self.saveLocalUser(self.currentUser);
+        .then(res => {
+            let user = new User({
+                email: email,
+                key: res.data.key,
+                role: res.data.role,
+                token: res.data.token,
+                tokenExpiration: Date.parse(res.data.expires),
+                refresh: res.data.refresh
+            })
+            log.debug([UserManager, 'Login Success', this.currentUser]);
+            this.saveLocalUser(user);
+            return user;
         })
         .catch((err: any) => {
             throw err;
         });
     }
 
-    loadUserApplication(user: User) {
-        var _user = user;
-        this.axios().request(AuthHelper.authenticate(user, {
-            url: '/users/me/application'
-        })).then((res) => {
-            _user.application = res.data.application;
-            log.debug([UserManager, 'Loaded User Application', _user.application])
-        }).catch((err) => {
-            throw err;
-        })
-    }
-
-    createUser(email: string, password:string): Promise<any> {
+    createUser(email: string, password: string): Promise<any> {
         var _email = email;
         return this.axios().request({
             method: 'post',
@@ -83,10 +81,18 @@ export class UserManager extends ServiceClass {
                 password: password,
                 client: super.config().client_id
             }
-        }).then((res: any) => {
-            log.debug([UserManager, 'Created User', res.data]);
-            res.data.email = _email;
-            //setCurrentUser(res.data);
+        }).then(res => {
+            let user = new User({
+                email: email,
+                key: res.data.key,
+                role: res.data.role,
+                token: res.data.token,
+                tokenExpiration: Date.parse(res.data.expires),
+                refresh: res.data.refresh
+            })
+            log.debug([UserManager, 'Created User', user]);
+            this.saveLocalUser(user);
+            return user;
         }).catch((err) => {
             throw err;
         });
