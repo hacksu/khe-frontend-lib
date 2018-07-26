@@ -1,16 +1,12 @@
 "use strict";
-exports.__esModule = true;
-var AuthHelper = /** @class */ (function () {
-    function AuthHelper() {
-    }
-    AuthHelper.authenticate = function (user, config) {
-        if (config === void 0) { config = {}; }
+Object.defineProperty(exports, "__esModule", { value: true });
+class AuthHelper {
+    static authenticate(user, config = {}) {
         config.auth = {
             username: user.key,
             password: user.token
         };
         return config;
-    };
-    return AuthHelper;
-}());
+    }
+}
 exports.AuthHelper = AuthHelper;

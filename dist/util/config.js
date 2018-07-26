@@ -1,8 +1,5 @@
 "use strict";
-exports.__esModule = true;
-var Config = /** @class */ (function () {
-    function Config() {
-    }
-    return Config;
-}());
+Object.defineProperty(exports, "__esModule", { value: true });
+class Config {
+}
 exports.Config = Config;

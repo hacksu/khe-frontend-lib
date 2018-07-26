@@ -1,9 +1,12 @@
 "use strict";
-exports.__esModule = true;
-var User = /** @class */ (function () {
-    function User() {
+Object.defineProperty(exports, "__esModule", { value: true });
+class User {
+    constructor(data) {
+        for (let key in data) {
+            // @ts-ignore: Doesn't understand how to merge
+            this[key] = data[key];
+        }
     }
-    User.prototype.isValid = function () { return false; };
-    return User;
-}());
+    isValid() { return false; }
+}
 exports.User = User;
