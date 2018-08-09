@@ -3,6 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./User");
 const log_1 = require("./util/log");
 const ServiceClass_1 = require("./ServiceClass");
+// Node specific storage
+if (typeof localStorage === "undefined" || localStorage === null) {
+    var LocalStorage = require('node-localstorage').LocalStorage;
+    var localStorage = new LocalStorage('/tmp/test');
+}
 class UserManager extends ServiceClass_1.ServiceClass {
     constructor(_service) {
         super(_service);
@@ -12,7 +17,7 @@ class UserManager extends ServiceClass_1.ServiceClass {
         }
     }
     getLocalUser() {
-        let userString = null; //localStorage.getItem(UserManager.localStorageKey);
+        let userString = localStorage.getItem(UserManager.localStorageKey);
         if (userString) {
             let user = JSON.parse(userString);
             log_1.log.debug([UserManager, 'Parsed User from localStorage', user]);
@@ -23,8 +28,13 @@ class UserManager extends ServiceClass_1.ServiceClass {
         }
     }
     saveLocalUser(user) {
+        this.currentUser = user;
         localStorage.setItem(UserManager.localStorageKey, JSON.stringify(this.currentUser));
         log_1.log.debug(['Saved User Locally', user]);
+    }
+    logout() {
+        localStorage.setItem(UserManager.localStorageKey, "");
+        log_1.log.debug(['Removed User Locally']);
     }
     login(email, password) {
         var self = this;
@@ -45,6 +55,7 @@ class UserManager extends ServiceClass_1.ServiceClass {
             });
             log_1.log.debug([UserManager, 'Login Success', this.currentUser]);
             this.saveLocalUser(user);
+            return user;
         })
             .catch((err) => {
             throw err;
@@ -70,6 +81,7 @@ class UserManager extends ServiceClass_1.ServiceClass {
                 refresh: res.data.refresh
             });
             log_1.log.debug([UserManager, 'Created User', user]);
+            this.saveLocalUser(user);
             return user;
         }).catch((err) => {
             throw err;

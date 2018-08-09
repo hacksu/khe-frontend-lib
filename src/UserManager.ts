@@ -43,6 +43,11 @@ export class UserManager extends ServiceClass {
         localStorage.setItem(UserManager.localStorageKey, JSON.stringify(this.currentUser));
         log.debug(['Saved User Locally', user])
     }
+
+    logout() {
+      localStorage.setItem(UserManager.localStorageKey, "");
+      log.debug(['Removed User Locally'])
+    }
     
     login(email: string, password: string): Promise<User>
     {

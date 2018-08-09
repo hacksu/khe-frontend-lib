@@ -15,10 +15,11 @@ class ApplicationManager extends ServiceClass_1.ServiceClass {
     constructor(other) {
         super(other);
         this.apiWrapper = other;
+        this.getLocalUser = other.userManager.getLocalUser.bind(other.userManager);
     }
-    getApplication(user) {
+    getApplication(user = this.getLocalUser()) {
         return __awaiter(this, void 0, void 0, function* () {
-            let res = yield this._axios.get("/users/me/application", AuthenticationHelper_1.AuthHelper.authenticate(user));
+            let res = yield this.axios().get("/users/me/application", AuthenticationHelper_1.AuthHelper.authenticate(user));
             if (res.data.application) {
                 let application = new Application_1.Application(res.data.application);
                 application._onServer = true;
@@ -42,9 +43,9 @@ class ApplicationManager extends ServiceClass_1.ServiceClass {
             });
         });
     }
-    saveApplication(user, application) {
+    saveApplication(application, user = this.getLocalUser()) {
         if (application._onServer) {
-            return this._axios.patch("/users/me/application", {
+            return this.axios().patch("/users/me/application", {
                 "name": application.name,
                 "school": application.school,
                 "phone": application.phone,
@@ -64,7 +65,7 @@ class ApplicationManager extends ServiceClass_1.ServiceClass {
             }, AuthenticationHelper_1.AuthHelper.authenticate(user));
         }
         else {
-            return this._axios.post("/users/me/application", {
+            return this.axios().post("/users/application", {
                 "name": application.name,
                 "school": application.school,
                 "phone": application.phone,

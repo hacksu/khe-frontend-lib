@@ -1,23 +1,12 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-exports.__esModule = true;
-var ServiceClass_1 = require("./ServiceClass");
-var log_1 = require("./util/log");
-var TicketManager = /** @class */ (function (_super) {
-    __extends(TicketManager, _super);
-    function TicketManager(other) {
-        return _super.call(this, other) || this;
+Object.defineProperty(exports, "__esModule", { value: true });
+const ServiceClass_1 = require("./ServiceClass");
+const log_1 = require("./util/log");
+class TicketManager extends ServiceClass_1.ServiceClass {
+    constructor(other) {
+        super(other);
     }
-    TicketManager.prototype.submitTicket = function (subject, body, email, name) {
+    submitTicket(subject, body, email, name) {
         return this.axios().request({
             method: 'post',
             url: '/tickets',
@@ -27,13 +16,12 @@ var TicketManager = /** @class */ (function (_super) {
                 replyTo: email,
                 name: name
             }
-        }).then(function (res) {
+        }).then((res) => {
             log_1.log.debug([TicketManager, 'Submit ticket.', res.data]);
             return res.data;
-        })["catch"](function (err) {
+        }).catch(err => {
             throw err;
         });
-    };
-    return TicketManager;
-}(ServiceClass_1.ServiceClass));
+    }
+}
 exports.TicketManager = TicketManager;

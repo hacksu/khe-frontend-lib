@@ -17,6 +17,7 @@ class SponsorLoader extends ServiceClass_1.ServiceClass {
                 return element;
             });
             log_1.log.debug([SponsorLoader, 'Got Sponsors', res.data]);
+            return res.data;
         }).catch((err) => {
             throw err;
         });
