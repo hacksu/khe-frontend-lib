@@ -4,13 +4,13 @@ import { ServiceClass } from './ServiceClass';
 import { AxiosInstance } from 'axios';
 import { AuthHelper } from './util/AuthenticationHelper'
 
-declare function require(name: any): any;
+//declare function require(name: any): any;
 
 // Node specific storage
-if (typeof localStorage === "undefined" || localStorage === null) {
-    var LocalStorage = require('node-localstorage').LocalStorage;
-    var localStorage = new LocalStorage('/tmp/test');
-}
+//if (typeof localStorage === "undefined" || localStorage === null) {
+//    var LocalStorage = require('node-localstorage').LocalStorage;
+//    var localStorage = new LocalStorage('/tmp/test');
+//}
 
 export class UserManager extends ServiceClass {
 
