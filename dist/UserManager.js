@@ -3,11 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./User");
 const log_1 = require("./util/log");
 const ServiceClass_1 = require("./ServiceClass");
-// Node specific storage
-if (typeof localStorage === "undefined" || localStorage === null) {
-    var LocalStorage = require('node-localstorage').LocalStorage;
-    var localStorage = new LocalStorage('/tmp/test');
-}
 class UserManager extends ServiceClass_1.ServiceClass {
     constructor(_service) {
         super(_service);
