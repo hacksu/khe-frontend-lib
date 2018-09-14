@@ -64,7 +64,7 @@ export class UserManager extends ServiceClass {
             return user;
         })
         .catch((err: any) => {
-            throw err;
+            return err;
         });
     }
 
@@ -91,7 +91,7 @@ export class UserManager extends ServiceClass {
             this.saveLocalUser(user);
             return user;
         }).catch((err) => {
-            throw err;
+            return err;
         });
     }
 }

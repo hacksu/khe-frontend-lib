@@ -53,7 +53,7 @@ class UserManager extends ServiceClass_1.ServiceClass {
             return user;
         })
             .catch((err) => {
-            throw err;
+            return err;
         });
     }
     createUser(email, password) {
@@ -79,7 +79,7 @@ class UserManager extends ServiceClass_1.ServiceClass {
             this.saveLocalUser(user);
             return user;
         }).catch((err) => {
-            throw err;
+            return err;
         });
     }
 }

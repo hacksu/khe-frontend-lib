@@ -22,7 +22,7 @@ export class TicketManager extends ServiceClass {
             log.debug([TicketManager, 'Submit ticket.', res.data]);
             return res.data;
         }).catch(err => {
-            throw err;
+            return err;
         });
     }
 }
