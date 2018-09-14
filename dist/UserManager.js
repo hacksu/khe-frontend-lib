@@ -51,9 +51,6 @@ class UserManager extends ServiceClass_1.ServiceClass {
             log_1.log.debug([UserManager, 'Login Success', this.currentUser]);
             this.saveLocalUser(user);
             return user;
-        })
-            .catch((err) => {
-            return err;
         });
     }
     createUser(email, password) {
@@ -78,8 +75,6 @@ class UserManager extends ServiceClass_1.ServiceClass {
             log_1.log.debug([UserManager, 'Created User', user]);
             this.saveLocalUser(user);
             return user;
-        }).catch((err) => {
-            return err;
         });
     }
 }

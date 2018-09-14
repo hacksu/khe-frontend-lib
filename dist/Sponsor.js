@@ -18,8 +18,6 @@ class SponsorLoader extends ServiceClass_1.ServiceClass {
             });
             log_1.log.debug([SponsorLoader, 'Got Sponsors', res.data]);
             return res.data;
-        }).catch((err) => {
-            return err;
         });
     }
 }

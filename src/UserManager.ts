@@ -62,9 +62,6 @@ export class UserManager extends ServiceClass {
             log.debug([UserManager, 'Login Success', this.currentUser]);
             this.saveLocalUser(user);
             return user;
-        })
-        .catch((err: any) => {
-            return err;
         });
     }
 
@@ -90,8 +87,6 @@ export class UserManager extends ServiceClass {
             log.debug([UserManager, 'Created User', user]);
             this.saveLocalUser(user);
             return user;
-        }).catch((err) => {
-            return err;
         });
     }
 }

@@ -26,8 +26,6 @@ export class SponsorLoader extends ServiceClass {
             })
             log.debug([SponsorLoader, 'Got Sponsors', res.data]);
             return res.data;
-        }).catch((err) => {
-            return err;
         })
     }
 

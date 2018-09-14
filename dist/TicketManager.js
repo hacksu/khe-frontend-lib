@@ -19,8 +19,6 @@ class TicketManager extends ServiceClass_1.ServiceClass {
         }).then((res) => {
             log_1.log.debug([TicketManager, 'Submit ticket.', res.data]);
             return res.data;
-        }).catch(err => {
-            return err;
         });
     }
 }
