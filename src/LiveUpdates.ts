@@ -157,4 +157,18 @@ export class LiveUpdates extends ServiceClass
             return new Array<Message>();
         })
     }
+
+    public exisitingEvents(): Promise<Event[]> {
+        return this._axios.request({
+            method: 'get',
+            url:'/events'
+        })
+        .then((data) => {
+            return data.data.events as Event[]
+        })
+        .catch((err) => {
+            console.error("Existing Event Request", err);
+            return new Array<Event>();
+        })
+    }
 }

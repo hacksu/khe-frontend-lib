@@ -28,10 +28,6 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
                         let notif = new Notification("Kent Hack Enough", {
                             body: msg.text,
                         });
-                        notif.onclick = function () {
-                            console.log("clicked on notif");
-                            window.location.href = "www.google.com";
-                        };
                     },
                     onUpdate(msg) { },
                     onDelete(msg) { }
@@ -101,6 +97,19 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
         })
             .catch((err) => {
             console.error("Existing Message Request", err);
+            return new Array();
+        });
+    }
+    exisitingEvents() {
+        return this._axios.request({
+            method: 'get',
+            url: '/events'
+        })
+            .then((data) => {
+            return data.data.events;
+        })
+            .catch((err) => {
+            console.error("Existing Event Request", err);
             return new Array();
         });
     }
