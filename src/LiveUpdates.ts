@@ -37,6 +37,23 @@ export class LiveUpdates extends ServiceClass
         this.messageListeners = [];
         this.eventListeners = [];
         this.initConnections();
+        this.initNotifications()
+    }
+
+    private initNotifications() {
+        Notification.requestPermission().then((grantStatus) => {
+            if (grantStatus === 'granted') {
+                this.SubscribeToMessages({
+                    onCreate(msg){
+                        let notif = new Notification("Kent Hack Enough", {
+                            body: msg.text,
+                        });
+                    },
+                    onUpdate(msg){},
+                    onDelete(msg){}
+                })
+            }
+        })
     }
 
     //#region Event Subscriptions

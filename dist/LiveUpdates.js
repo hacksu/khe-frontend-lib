@@ -18,6 +18,26 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
         this.messageListeners = [];
         this.eventListeners = [];
         this.initConnections();
+        this.initNotifications();
+    }
+    initNotifications() {
+        Notification.requestPermission().then((grantStatus) => {
+            if (grantStatus === 'granted') {
+                this.SubscribeToMessages({
+                    onCreate(msg) {
+                        let notif = new Notification("Kent Hack Enough", {
+                            body: msg.text,
+                        });
+                        notif.onclick = function () {
+                            console.log("clicked on notif");
+                            window.location.href = "www.google.com";
+                        };
+                    },
+                    onUpdate(msg) { },
+                    onDelete(msg) { }
+                });
+            }
+        });
     }
     //#region Event Subscriptions
     SubscribeToMessages(subscriber) {
