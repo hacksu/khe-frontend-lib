@@ -61,7 +61,8 @@ class ApplicationManager extends ServiceClass_1.ServiceClass {
                 "travel": application.travel,
                 "waiver": application.waiver,
                 "resume": application.resume,
-                "link": application.link // a github/linkedin link
+                "link": application.link,
+                "going": application.going
             }, AuthenticationHelper_1.AuthHelper.authenticate(user));
         }
         else {
@@ -81,7 +82,8 @@ class ApplicationManager extends ServiceClass_1.ServiceClass {
                 "travel": application.travel,
                 "waiver": application.waiver,
                 "resume": application.resume,
-                "link": application.link // a github/linkedin link
+                "link": application.link,
+                "going": application.going
             }, AuthenticationHelper_1.AuthHelper.authenticate(user));
         }
     }

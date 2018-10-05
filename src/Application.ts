@@ -18,6 +18,7 @@ interface ApplicationData {
     resume?: string;         // the filename of their resume
     link?: string;           // a github/linkedin link
     extra?: string;
+    going?: string;
 }
 
 
@@ -46,6 +47,7 @@ export class Application implements IValidatable, ApplicationData
     resume?: string;         // the filename of their resume
     link?: string;           // a github/linkedin link
     extra?: string;
+    going?: string;
     _onServer = false;
     isValid() { return false; }
 }

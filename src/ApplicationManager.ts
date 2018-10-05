@@ -60,7 +60,8 @@ export class ApplicationManager extends ServiceClass {
                     "travel": application.travel,        // need travel reimbursement?
                     "waiver": application.waiver,        // agreed to waiver?
                     "resume": application.resume,         // the filename of their resume
-                    "link": application.link            // a github/linkedin link
+                    "link": application.link,            // a github/linkedin link
+                    "going": application.going
                 }, AuthHelper.authenticate(user))
         } else {
             return this.axios().post("/users/application", 
@@ -80,7 +81,8 @@ export class ApplicationManager extends ServiceClass {
                     "travel": application.travel,        // need travel reimbursement?
                     "waiver": application.waiver,        // agreed to waiver?
                     "resume": application.resume,         // the filename of their resume
-                    "link": application.link            // a github/linkedin link
+                    "link": application.link,            // a github/linkedin link
+                    "going": application.going
                 }, AuthHelper.authenticate(user))
         }
     }
