@@ -4,6 +4,9 @@ const io = require("socket.io-client");
 const log_1 = require("./util/log");
 const ServiceClass_1 = require("./ServiceClass");
 class Message {
+    constructor(text) {
+        this.text = text;
+    }
 }
 exports.Message = Message;
 class Event {
@@ -67,6 +70,19 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
     }
     GetEventListeners() {
         return this.eventListeners;
+    }
+    exisitingMessages() {
+        return this._axios.request({
+            method: 'get',
+            url: '/messages'
+        })
+            .then((data) => {
+            return data.data.messages;
+        })
+            .catch((err) => {
+            console.error("Existing Message Request", err);
+            return new Array();
+        });
     }
 }
 exports.LiveUpdates = LiveUpdates;

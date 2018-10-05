@@ -9,6 +9,7 @@ import { ApplicationManager } from './ApplicationManager'
 
 import { SponsorLoader } from './Sponsor';
 import { TicketManager } from './TicketManager';
+import { LiveUpdates } from './LiveUpdates';
 
 export interface IValidatable
 {
@@ -21,6 +22,7 @@ export class ApiWrapper extends ExplicitServiceClass
     readonly userManager: UserManager;
     readonly applicationManager: ApplicationManager;
     readonly ticketManager: TicketManager;
+    readonly liveManager: LiveUpdates;
     
     constructor(config: Config, axiosInst: AxiosInstance = axios.create({ baseURL: config.api_base }))
     {
@@ -30,5 +32,6 @@ export class ApiWrapper extends ExplicitServiceClass
         this.sponsorSource = new SponsorLoader(this);
         this.applicationManager = new ApplicationManager(this);
         this.ticketManager = new TicketManager(this);
+        this.liveManager = new LiveUpdates(this);
     }
 }

@@ -11,6 +11,9 @@ export interface ISubscriber<T> {
 export interface IMessageSubscriber extends ISubscriber<Message> { }
 export class Message {
     public text: string;
+    public constructor(text: string) {
+        this.text = text;
+    }
 }
 
 export interface IEventSubscriber extends ISubscriber<Event> { }
@@ -29,7 +32,7 @@ export class LiveUpdates extends ServiceClass
     protected messageListeners : IMessageSubscriber[];
     protected eventListeners : IEventSubscriber[];
 
-    protected constructor(_service: ServiceClass) {
+    public constructor(_service: ServiceClass) {
         super(_service);
         this.messageListeners = [];
         this.eventListeners = [];
@@ -122,5 +125,19 @@ export class LiveUpdates extends ServiceClass
 
     protected GetEventListeners(): IEventSubscriber[] {
         return this.eventListeners;
+    }
+
+    public exisitingMessages(): Promise<Message[]> {
+        return this._axios.request({
+            method: 'get',
+            url:'/messages'
+        })
+        .then((data) => {
+            return data.data.messages as Message[]
+        })
+        .catch((err) => {
+            console.error("Existing Message Request", err);
+            return new Array<Message>();
+        })
     }
 }
