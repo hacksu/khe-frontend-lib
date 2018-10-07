@@ -22,21 +22,21 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
     }
     initNotifications() {
         // Browsers that dont support notifications throw an undefined error.
-        if (!Notification)
-            return;
-        Notification.requestPermission().then((grantStatus) => {
-            if (grantStatus === 'granted') {
-                this.SubscribeToMessages({
-                    onCreate(msg) {
-                        let notif = new Notification("Kent Hack Enough", {
-                            body: msg.text,
-                        });
-                    },
-                    onUpdate(msg) { },
-                    onDelete(msg) { }
-                });
-            }
-        });
+        ///if (!Notification) return;
+        ///
+        ///Notification.requestPermission().then((grantStatus) => {
+        ///    if (grantStatus === 'granted') {
+        ///        this.SubscribeToMessages({
+        ///            onCreate(msg){
+        ///                let notif = new Notification("Kent Hack Enough", {
+        ///                    body: msg.text,
+        ///                });
+        ///            },
+        ///            onUpdate(msg){},
+        ///            onDelete(msg){}
+        ///        })
+        ///    }
+        ///})
     }
     //#region Event Subscriptions
     SubscribeToMessages(subscriber) {
