@@ -41,6 +41,9 @@ export class LiveUpdates extends ServiceClass
     }
 
     private initNotifications() {
+        // Browsers that dont support notifications throw an undefined error.
+        if (!Notification) return;
+        
         Notification.requestPermission().then((grantStatus) => {
             if (grantStatus === 'granted') {
                 this.SubscribeToMessages({
