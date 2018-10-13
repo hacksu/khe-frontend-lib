@@ -89,4 +89,25 @@ export class UserManager extends ServiceClass {
             return user;
         });
     }
+
+    changeUserPassword(email: string, password: string, newPassword: string) {
+        this.login(email, password).then((user) => {
+            return this.axios().patch("/users", {
+                password: newPassword
+            }, AuthHelper.authenticate(user))
+            .then(() => {
+                this.logout();
+            }); 
+        });
+    }
+
+    resetUserPassword(email: string) {
+        return this.axios().request({
+            method: 'post',
+            url: '/users/reset',
+            data: {
+                email: email
+            }
+        });
+    }
 }

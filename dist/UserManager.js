@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./User");
 const log_1 = require("./util/log");
 const ServiceClass_1 = require("./ServiceClass");
+const AuthenticationHelper_1 = require("./util/AuthenticationHelper");
 class UserManager extends ServiceClass_1.ServiceClass {
     constructor(_service) {
         super(_service);
@@ -75,6 +76,25 @@ class UserManager extends ServiceClass_1.ServiceClass {
             log_1.log.debug([UserManager, 'Created User', user]);
             this.saveLocalUser(user);
             return user;
+        });
+    }
+    changeUserPassword(email, password, newPassword) {
+        this.login(email, password).then((user) => {
+            return this.axios().patch("/users", {
+                password: newPassword
+            }, AuthenticationHelper_1.AuthHelper.authenticate(user))
+                .then(() => {
+                this.logout();
+            });
+        });
+    }
+    resetUserPassword(email) {
+        return this.axios().request({
+            method: 'post',
+            url: '/users/reset',
+            data: {
+                email: email
+            }
         });
     }
 }
