@@ -91,8 +91,8 @@ export class UserManager extends ServiceClass {
     }
 
     changeUserPassword(email: string, password: string, newPassword: string) {
-        this.login(email, password).then((user) => {
-            return this.axios().patch("/users", {
+        return this.login(email, password).then((user) => {
+            this.axios().patch("/users", {
                 password: newPassword
             }, AuthHelper.authenticate(user))
             .then(() => {
