@@ -47,6 +47,7 @@ export class LiveUpdates extends ServiceClass
             })
         } catch (err) {
             // Safari is weird, so this makes sure that notifications don't break safari
+            // https://stackoverflow.com/questions/38114266/web-notifications-not-appearing-in-safari
             if (err instanceof TypeError) {
                 Notification.requestPermission((grantStatus) => {                                                                                                                                                             
                     this.handleNotifications(grantStatus);
