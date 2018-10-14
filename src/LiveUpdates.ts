@@ -41,22 +41,35 @@ export class LiveUpdates extends ServiceClass
     }
 
     private initNotifications() {
-        // Browsers that dont support notifications throw an undefined error.
-        ///if (!Notification) return;
-        ///
-        ///Notification.requestPermission().then((grantStatus) => {
-        ///    if (grantStatus === 'granted') {
-        ///        this.SubscribeToMessages({
-        ///            onCreate(msg){
-        ///                let notif = new Notification("Kent Hack Enough", {
-        ///                    body: msg.text,
-        ///                });
-        ///            },
-        ///            onUpdate(msg){},
-        ///            onDelete(msg){}
-        ///        })
-        ///    }
-        ///})
+        try {
+            Notification.requestPermission().then((grantStatus) => {
+                this.handleNotifications(grantStatus);
+            })
+        } catch (err) {
+            // Safari is weird, so this makes sure that notifications don't break safari
+            // https://stackoverflow.com/questions/38114266/web-notifications-not-appearing-in-safari
+            if (err instanceof TypeError) {
+                Notification.requestPermission((grantStatus) => {                                                                                                                                                             
+                    this.handleNotifications(grantStatus);
+                });
+            } else {
+                throw err;                                                                                                                                                                                       
+            } 
+        }
+    }
+
+    private handleNotifications(grantStatus: string) {
+        if (grantStatus === 'granted') {
+            this.SubscribeToMessages({
+                onCreate(msg){
+                    let notif = new Notification("Kent Hack Enough", {
+                        body: msg.text,
+                    });
+                },
+                onUpdate(msg){},
+                onDelete(msg){}
+            })
+        }
     }
 
     //#region Event Subscriptions
