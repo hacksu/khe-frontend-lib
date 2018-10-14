@@ -21,22 +21,35 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
         this.initNotifications();
     }
     initNotifications() {
-        // Browsers that dont support notifications throw an undefined error.
-        ///if (!Notification) return;
-        ///
-        ///Notification.requestPermission().then((grantStatus) => {
-        ///    if (grantStatus === 'granted') {
-        ///        this.SubscribeToMessages({
-        ///            onCreate(msg){
-        ///                let notif = new Notification("Kent Hack Enough", {
-        ///                    body: msg.text,
-        ///                });
-        ///            },
-        ///            onUpdate(msg){},
-        ///            onDelete(msg){}
-        ///        })
-        ///    }
-        ///})
+        try {
+            Notification.requestPermission().then((grantStatus) => {
+                this.handleNotifications(grantStatus);
+            });
+        }
+        catch (err) {
+            // Safari is weird, so this makes sure that notifications don't break safari
+            if (err instanceof TypeError) {
+                Notification.requestPermission((grantStatus) => {
+                    this.handleNotifications(grantStatus);
+                });
+            }
+            else {
+                throw err;
+            }
+        }
+    }
+    handleNotifications(grantStatus) {
+        if (grantStatus === 'granted') {
+            this.SubscribeToMessages({
+                onCreate(msg) {
+                    let notif = new Notification("Kent Hack Enough", {
+                        body: msg.text,
+                    });
+                },
+                onUpdate(msg) { },
+                onDelete(msg) { }
+            });
+        }
     }
     //#region Event Subscriptions
     SubscribeToMessages(subscriber) {
