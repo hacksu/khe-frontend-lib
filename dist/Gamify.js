@@ -39,6 +39,13 @@ class GamifyManager extends ServiceClass_1.ServiceClass {
             return res.data[0].points;
         });
     }
+    generateCode(len = 5) {
+        var text = "";
+        var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < len; i++)
+            text += charset.charAt(Math.floor(Math.random() * charset.length));
+        return text;
+    }
     /**
      * Create a new single use point identified by a 5
      * letter code.
@@ -52,7 +59,16 @@ class GamifyManager extends ServiceClass_1.ServiceClass {
             // Create Points
             let result = yield this.axios().get("/points/singleuse/" + sId + "/" + pAmount);
             // Get 5 letter code
-            // Create short URL
+            let success = false;
+            while (!success) {
+                // Create short URL
+                try {
+                    let code = this.generateCode();
+                    //await this.axios().post()
+                }
+                catch (err) {
+                }
+            }
             return result.data;
         });
     }

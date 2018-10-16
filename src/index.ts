@@ -10,7 +10,8 @@ import { ApplicationManager } from './ApplicationManager'
 import { SponsorLoader } from './Sponsor';
 import { TicketManager } from './TicketManager';
 import { LiveUpdates } from './LiveUpdates';
-import { GamifyManager } from './Gamify'
+import { GamifyManager } from './Gamify';
+import { GamifyV1 } from './GamifyV1';
 
 export interface IValidatable
 {
@@ -25,6 +26,7 @@ export class ApiWrapper extends ExplicitServiceClass
     readonly ticketManager: TicketManager;
     readonly liveManager: LiveUpdates;
     readonly gamifyManager: GamifyManager;
+    readonly gamifyV1: GamifyV1;
     
     constructor(config: Config, axiosInst: AxiosInstance = axios.create({ baseURL: config.api_base }))
     {
@@ -36,5 +38,6 @@ export class ApiWrapper extends ExplicitServiceClass
         this.ticketManager = new TicketManager(this);
         this.liveManager = new LiveUpdates(this);
         this.gamifyManager = new GamifyManager(this);
+        this.gamifyV1 = new GamifyV1(this);
     }
 }
