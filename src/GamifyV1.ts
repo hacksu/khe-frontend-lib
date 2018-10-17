@@ -13,7 +13,7 @@ export class GamifyV1 extends ServiceClass {
         return res.data;
     }
 
-    public redeem(user: User, pId: Number, points: Number, src: string, reason: string): Promise<any> {
+    public redeem(user: User, pId: string, points: string, src: string, reason: string): Promise<any> {
         return this.axios().request(AuthHelper.authenticate(user, {
             url: '/gamify/' + pId + '/' + points + '/' + src + '/' + reason,
             method: 'get'
