@@ -21,21 +21,24 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
         this.initNotifications();
     }
     initNotifications() {
-        try {
-            Notification.requestPermission().then((grantStatus) => {
-                this.handleNotifications(grantStatus);
-            });
-        }
-        catch (err) {
-            // Safari is weird, so this makes sure that notifications don't break safari
-            // https://stackoverflow.com/questions/38114266/web-notifications-not-appearing-in-safari
-            if (err instanceof TypeError) {
-                Notification.requestPermission((grantStatus) => {
+        // fuck mobile
+        if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            try {
+                Notification.requestPermission().then((grantStatus) => {
                     this.handleNotifications(grantStatus);
                 });
             }
-            else {
-                throw err;
+            catch (err) {
+                // Safari is weird, so this makes sure that notifications don't break safari
+                // https://stackoverflow.com/questions/38114266/web-notifications-not-appearing-in-safari
+                if (err instanceof TypeError) {
+                    Notification.requestPermission((grantStatus) => {
+                        this.handleNotifications(grantStatus);
+                    });
+                }
+                else {
+                    throw err;
+                }
             }
         }
     }
