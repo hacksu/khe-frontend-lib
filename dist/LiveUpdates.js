@@ -21,7 +21,8 @@ class LiveUpdates extends ServiceClass_1.ServiceClass {
         this.initNotifications();
     }
     initNotifications() {
-        // fuck mobile
+        // Don't allow browser notifications if the device is mobile
+        // https://stackoverflow.com/questions/3514784/what-is-the-best-way-to-detect-a-mobile-device-in-jquery
         if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             try {
                 Notification.requestPermission().then((grantStatus) => {
