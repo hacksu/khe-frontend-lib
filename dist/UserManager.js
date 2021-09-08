@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserManager = void 0;
 const User_1 = require("./User");
 const log_1 = require("./util/log");
 const ServiceClass_1 = require("./ServiceClass");
@@ -98,5 +99,5 @@ class UserManager extends ServiceClass_1.ServiceClass {
         });
     }
 }
-UserManager.localStorageKey = 'user';
 exports.UserManager = UserManager;
+UserManager.localStorageKey = 'user';

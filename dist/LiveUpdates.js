@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.LiveUpdates = exports.Event = exports.Message = void 0;
 const io = require("socket.io-client");
 const log_1 = require("./util/log");
 const ServiceClass_1 = require("./ServiceClass");

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TicketManager = void 0;
 const ServiceClass_1 = require("./ServiceClass");
 const log_1 = require("./util/log");
 class TicketManager extends ServiceClass_1.ServiceClass {

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthHelper = void 0;
 class AuthHelper {
     static authenticate(user, config = {}) {
         config.auth = {

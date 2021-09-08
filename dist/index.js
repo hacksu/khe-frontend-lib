@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ApiWrapper = void 0;
 const axios_1 = require("axios");
 const ServiceClass_1 = require("./ServiceClass");
 const UserManager_1 = require("./UserManager");

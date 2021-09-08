@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RequestType = void 0;
 var RequestType;
 (function (RequestType) {
     RequestType[RequestType["GET"] = 0] = "GET";

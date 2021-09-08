@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SponsorLoader = exports.Sponsor = void 0;
 const log_1 = require("./util/log");
 const ServiceClass_1 = require("./ServiceClass");
 class Sponsor {

@@ -37,7 +37,8 @@ export class ApplicationManager extends ServiceClass {
             major: null,
             conduct: null,
             travel: null,
-            waiver: null
+            waiver: null,
+	    mlh_emails: null
         })
     }
 
@@ -61,7 +62,8 @@ export class ApplicationManager extends ServiceClass {
                     "waiver": application.waiver,        // agreed to waiver?
                     "resume": application.resume,         // the filename of their resume
                     "link": application.link,            // a github/linkedin link
-                    "going": application.going
+                    "going": application.going,
+		    "mlh_emails": application.mlh_emails,
                 }, AuthHelper.authenticate(user))
         } else {
             return this.axios().post("/users/application", 
@@ -82,7 +84,8 @@ export class ApplicationManager extends ServiceClass {
                     "waiver": application.waiver,        // agreed to waiver?
                     "resume": application.resume,         // the filename of their resume
                     "link": application.link,            // a github/linkedin link
-                    "going": application.going
+                    "going": application.going,
+		    "mlh_emails": application.mlh_emails,
                 }, AuthHelper.authenticate(user))
         }
     }
