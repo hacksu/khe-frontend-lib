@@ -19,6 +19,7 @@ interface ApplicationData {
     link?: string;           // a github/linkedin link
     extra?: string;
     going?: string;
+    mlh_emails?: boolean;
 }
 
 
@@ -48,6 +49,7 @@ export class Application implements IValidatable, ApplicationData
     link?: string;           // a github/linkedin link
     extra?: string;
     going?: string;
+    mlh_emails?: boolean;
     _onServer = false;
     isValid() { return false; }
 }
